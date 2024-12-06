@@ -2,7 +2,7 @@ import sys
 import random
 
 try:
-    A = int(sys.stdin.read().strip())
+    A = int(sys.stdin.readline().strip())
     B = random.randint(-10, 10)
     result = A / B
     print(result)
