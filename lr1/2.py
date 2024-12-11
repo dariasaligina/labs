@@ -6,5 +6,8 @@ try:
     B = random.randint(-10, 10)
     result = A / B
     print(result)
+    with open('logs.txt', 'a') as f:
+        f.write(f"A = {A}, B = {B}, A/B={result}\n")
 except Exception as e:
-    print(f"Ошибка: {e}", file=sys.stderr)
+    with open('errors.txt', 'a') as f:
+        print(f"Error: {e}", file=f)
