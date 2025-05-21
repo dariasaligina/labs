@@ -1,34 +1,40 @@
-[project]
-name = "tiny-database"
-version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
-readme = "README.md"
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
 
-[tool.poetry.dependencies]
-python = "^3.11"
-pytest = "8.3.3"
-pytest-cov = "6.0.0"
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
 
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "coverage",
-    "pytest-cov",
-    "flake8",
-    "black",
-    "isort",
-    "mypy",
-]
-test = [
-    "pytest",
-    "coverage",
-    "pytest-cov",
-]
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.2.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [ "flake8-bugbear" ]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.15.0
+    hooks:
+      - id: mypy
+        exclude: ^tests/
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest with coverage
+        entry: pytest --cov=. --cov-fail-under=100
+        language: system
+        types: [python]
+        pass_filenames: false
