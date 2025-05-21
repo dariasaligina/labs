@@ -2,7 +2,9 @@
 name = "tiny-database"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = [
+    { name = "dasha", email = "dariasaligina@gmail.com" }
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
