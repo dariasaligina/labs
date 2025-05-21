@@ -140,3 +140,7 @@ def test_agrigate(database):
     assert aggregate_result == {'SUM': 58.0, 'COUNT': 2, 'MAX': 30.0, 'MIN': 28.0, 'AVG': 29.0}
     aggregate_result = database.aggregate("employees", "salary")
     assert aggregate_result == {'SUM': 130000.0, 'COUNT': 2, 'MAX': 70000.0, 'MIN': 60000.0, 'AVG': 65000.0}
+
+def test_insert_nonexistent_table(database):
+    with pytest.raises(ValueError, match="Table non_existent_table does not exist."):
+        database.insert("non_existent_table", "1 John 30 50000")
