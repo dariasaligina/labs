@@ -14,5 +14,21 @@ pytest-cov = "6.0.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+    "flake8",
+    "black",
+    "isort",
+    "mypy",
+]
+test = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
