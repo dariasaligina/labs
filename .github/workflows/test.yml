@@ -26,6 +26,7 @@ jobs:
         run: |
              cd ./tiny-database
              poetry install
+             poetry lock
              poetry run pytest --cov --cov-report=term-missing --cov-fail-under=100
 
       
