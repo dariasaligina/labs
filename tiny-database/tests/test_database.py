@@ -300,3 +300,9 @@ def test_department_table_load_file_not_exists(database):
     department_table.FILE_PATH = "nonexistent_department_table.csv"
     department_table.load()
     assert department_table.data == []
+
+
+def test_database_register_table(database):
+    temp_table = TemporaryTable([])
+    database.register_table("temp_table", temp_table)
+    assert "temp_table" in database.tables
