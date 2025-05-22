@@ -141,9 +141,11 @@ def test_agrigate(database):
     aggregate_result = database.aggregate("employees", "salary")
     assert aggregate_result == {'SUM': 130000.0, 'COUNT': 2, 'MAX': 70000.0, 'MIN': 60000.0, 'AVG': 65000.0}
 
+
 def test_insert_nonexistent_table(database):
     with pytest.raises(ValueError, match="Table non_existent_table does not exist."):
         database.insert("non_existent_table", "1 John 30 50000")
+
 
 def test_aggregate_nonexistent_table(database):
     with pytest.raises(ValueError, match="Table non_existent_table does not exist."):
@@ -159,3 +161,17 @@ def test_aggregate_non_numeric_field(database):
     database.insert("employees", "1 Alice 30 70000 1")
     with pytest.raises(ValueError, match="Field must contain numbers"):
         database.aggregate("employees", "name")
+
+def test_invalid_join_attr(database):
+    database.insert("employees", "1 Alice 30 70000 1")
+    database.insert("employees", "2 Bob 28 60000 2")
+    database.insert("departments", "1 Security")
+    database.insert("departments", "2 Engineering")
+    with pytest.raises(ValueError, match="invalid join_attr"):
+        employee_data = database.join("employees", "departments", "abc")
+
+def test_table2_entry_nonexistent(database):
+    database.insert("employees", "1 Alice 30 70000 5")
+    database.insert("departments", "1 Security")
+    with pytest.raises(ValueError, match="department_id = 5 does not exist."):
+        employee_data = database.join("employees", "departments", "department_id")
