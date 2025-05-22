@@ -33,13 +33,14 @@ class Database(metaclass=SingletonMeta):
         table = self.tables.get(table_name)
         return table.select(*args) if table else None
 
-    def join(self, table1_name, table2_name, join_attr="id"):
+     def join(self, table1_name, table2_name, join_attr="id"):
         return_data = []
 
         for table1_entry in self.tables.get(table1_name).data:
             return_data.append(table1_entry)
-            if not table1_entry[join_attr]:
-                ValueError(f"invalid join_attr")
+            if join_attr not in table1_entry.keys():
+                raise ValueError(f"invalid join_attr")
+
             table2_entry = self.tables.get(table2_name).find_id(table1_entry[join_attr])
             if not table2_entry:
                 raise ValueError(f"{join_attr} = {table1_entry[join_attr]} does not exist.")
