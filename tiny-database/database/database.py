@@ -79,11 +79,11 @@ class Table(ABC):
 
     @abstractmethod
     def insert(self, data):
-        pass
+        pass # pragma: no cover
 
     @abstractmethod
     def select(self, *args):
-        pass
+        pass # pragma: no cover
 
 
 class EmployeeTable(Table):
