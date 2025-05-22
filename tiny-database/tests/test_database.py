@@ -175,3 +175,15 @@ def test_table2_entry_nonexistent(database):
     database.insert("departments", "1 Security")
     with pytest.raises(ValueError, match="department_id = 5 does not exist."):
         employee_data = database.join("employees", "departments", "department_id")
+
+def test_invalid_aggregate(database):
+    database.insert("employees", "1 Alice a 70000 1")
+    database.insert("employees", "2 Bob 28 60000 2")
+    with pytest.raises(ValueError, match="Field must contain numbers"):
+        aggregate_result = database.aggregate("employees", "age")
+
+def test_invalid_insert(database):
+    database.insert("employees", "1 Alice a 70000 1")
+    with pytest.raises(ValueError, match="Entry with id = 1 already exists."):
+        database.insert("employees", "1 Bob 28 60000 2")
+
