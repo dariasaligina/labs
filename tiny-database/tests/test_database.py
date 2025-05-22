@@ -144,3 +144,18 @@ def test_agrigate(database):
 def test_insert_nonexistent_table(database):
     with pytest.raises(ValueError, match="Table non_existent_table does not exist."):
         database.insert("non_existent_table", "1 John 30 50000")
+
+def test_aggregate_nonexistent_table(database):
+    with pytest.raises(ValueError, match="Table non_existent_table does not exist."):
+        database.aggregate("non_existent_table", "age")
+
+
+def test_aggregate_empty_table(database):
+    with pytest.raises(ValueError, match="No data in table employees."):
+        database.aggregate("employees", "age")
+
+
+def test_aggregate_non_numeric_field(database):
+    database.insert("employees", "1 Alice 30 70000 1")
+    with pytest.raises(ValueError, match="Field must contain numbers"):
+        database.aggregate("employees", "name")
