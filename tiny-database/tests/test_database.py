@@ -186,6 +186,13 @@ def test_invalid_aggregate(database):
         database.aggregate("employees", "age")
 
 
+def test_invalid_aggregate_2(database):
+    database.insert("employees", "1 Alice 30 70000 1")
+    database.insert("employees", "2 Bob b 60000 2")
+    with pytest.raises(ValueError, match="Field must contain numbers"):
+        database.aggregate("employees", "age")
+
+
 def test_invalid_insert(database):
     database.insert("employees", "1 Alice a 70000 1")
     with pytest.raises(ValueError, match="Entry with id = 1 already exists."):
@@ -319,7 +326,7 @@ def test_temporary_table_find_by_nonexistent_id():
     data = [{'id': '1', 'name': 'Alice', 'age': '30'}, {'id': '2', 'name': 'Bob', 'age': '28'}]
     temp_table = TemporaryTable(data)
     result = temp_table.find_id('3')
-    assert result == None
+    assert result is None
 
 
 def test_temporary_table_select():
@@ -337,3 +344,8 @@ def test_temporary_table_insert():
     assert temp_table.data[0] == {'id': '1', 'field1': 'A', 'field2': '25'}
 
 
+def test_temporary_table_insert_duplicate_id():
+    data = [{'id': '1', 'name': 'Alice', 'age': '30'}, {'id': '2', 'name': 'Bob', 'age': '28'}]
+    temp_table = TemporaryTable(data)
+    with pytest.raises(ValueError, match="Entry with id = 1 already exists."):
+        temp_table.insert("1 Anna 25")
