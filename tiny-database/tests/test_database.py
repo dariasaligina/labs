@@ -162,28 +162,104 @@ def test_aggregate_non_numeric_field(database):
     with pytest.raises(ValueError, match="Field must contain numbers"):
         database.aggregate("employees", "name")
 
+
 def test_invalid_join_attr(database):
     database.insert("employees", "1 Alice 30 70000 1")
     database.insert("employees", "2 Bob 28 60000 2")
     database.insert("departments", "1 Security")
     database.insert("departments", "2 Engineering")
     with pytest.raises(ValueError, match="invalid join_attr"):
-        employee_data = database.join("employees", "departments", "abc")
+        database.join("employees", "departments", "abc")
+
 
 def test_table2_entry_nonexistent(database):
     database.insert("employees", "1 Alice 30 70000 5")
     database.insert("departments", "1 Security")
     with pytest.raises(ValueError, match="department_id = 5 does not exist."):
-        employee_data = database.join("employees", "departments", "department_id")
+        database.join("employees", "departments", "department_id")
+
 
 def test_invalid_aggregate(database):
     database.insert("employees", "1 Alice a 70000 1")
     database.insert("employees", "2 Bob 28 60000 2")
     with pytest.raises(ValueError, match="Field must contain numbers"):
-        aggregate_result = database.aggregate("employees", "age")
+        database.aggregate("employees", "age")
+
 
 def test_invalid_insert(database):
     database.insert("employees", "1 Alice a 70000 1")
     with pytest.raises(ValueError, match="Entry with id = 1 already exists."):
         database.insert("employees", "1 Bob 28 60000 2")
 
+
+def test_employee_table_insert_duplicate_id(database):
+    database.insert("employees", "4 David 35 80000 3")
+    with pytest.raises(ValueError, match="Entry with id = 4 already exists."):
+        database.insert("employees", "4 Eve 25 50000 4")
+
+
+def test_department_table_insert_duplicate_id(database):
+    database.insert("departments", "4 Marketing")
+    with pytest.raises(ValueError, match="Entry with id = 4 already exists."):
+        database.insert("departments", "4 Sales")
+
+
+def test_bonus_table_insert_duplicate_id(database):
+    database.insert("bonuses", "4 5 13.05.2024 6000")
+    with pytest.raises(ValueError, match="Entry with id = 4 already exists."):
+        database.insert("bonuses", "4 6 14.06.2024 7000")
+
+
+def test_employee_table_select_range(database):
+    database.insert("employees", "5 Frank 40 90000 1")
+    database.insert("employees", "6 Grace 32 75000 2")
+    database.insert("employees", "7 Heidi 28 65000 1")
+    selected_employees = database.select("employees", 5, 6)
+    assert len(selected_employees) == 2
+    assert selected_employees[0] == {'id': '5', 'name': 'Frank', 'age': '40', 'salary': '90000', "department_id": "1"}
+    assert selected_employees[1] == {'id': '6', 'name': 'Grace', 'age': '32', 'salary': '75000', "department_id": "2"}
+
+
+def test_department_table_save_load(database, temp_department_file):
+    department_table = DepartmentTable()
+    department_table.FILE_PATH = temp_department_file
+    database.register_table("departments", department_table)
+    database.insert("departments", "8 R&D")
+    database.insert("departments", "9 QA")
+    # Создаем новый экземпляр DepartmentTable, чтобы проверить загрузку данных
+    new_department_table = DepartmentTable()
+    new_department_table.FILE_PATH = temp_department_file
+    new_department_table.load()
+    assert len(new_department_table.data) == 2
+    assert new_department_table.data[0] == {'id': '8', 'department_name': 'R&D'}
+    assert new_department_table.data[1] == {'id': '9', 'department_name': 'QA'}
+
+
+def test_employee_table_save_load(database, temp_employee_file):
+    employee_table = EmployeeTable()
+    employee_table.FILE_PATH = temp_employee_file
+    database.register_table("employees", employee_table)
+    database.insert("employees", "8 John 40 90000 3")
+    database.insert("employees", "9 Alex 32 75000 2")
+    new_employee_table = EmployeeTable()
+    new_employee_table.FILE_PATH = temp_employee_file
+    new_employee_table.load()
+    assert len(new_employee_table.data) == 2
+    assert new_employee_table.data[0] == {'id': '8', 'name': 'John', 'age': '40', 'salary': '90000',
+                                          "department_id": "3"}
+    assert new_employee_table.data[1] == {'id': '9', 'name': 'Alex', 'age': '32', 'salary': '75000',
+                                          "department_id": "2"}
+
+
+def test_bonus_table_save_load(database, temp_bonus_file):
+    bonus_table = BonusTable()
+    bonus_table.FILE_PATH = temp_bonus_file
+    database.register_table("bonuses", bonus_table)
+    database.insert("bonuses", "5 10 15.07.2024 8000")
+    database.insert("bonuses", "6 11 16.08.2024 9000")
+    new_bonus_table = BonusTable()
+    new_bonus_table.FILE_PATH = temp_bonus_file
+    new_bonus_table.load()
+    assert len(new_bonus_table.data) == 2
+    assert new_bonus_table.data[0] == {'id': '5', 'employee_id': '10', 'date': '15.07.2024', 'amount': '8000'}
+    assert new_bonus_table.data[1] == {'id': '6', 'employee_id': '11', 'date': '16.08.2024', 'amount': '9000'}
