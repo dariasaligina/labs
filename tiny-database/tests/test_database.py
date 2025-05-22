@@ -263,3 +263,40 @@ def test_bonus_table_save_load(database, temp_bonus_file):
     assert len(new_bonus_table.data) == 2
     assert new_bonus_table.data[0] == {'id': '5', 'employee_id': '10', 'date': '15.07.2024', 'amount': '8000'}
     assert new_bonus_table.data[1] == {'id': '6', 'employee_id': '11', 'date': '16.08.2024', 'amount': '9000'}
+
+
+def test_temp_employee_file_fixture(temp_employee_file):
+    assert os.path.exists(temp_employee_file)
+
+
+def test_temp_department_file_fixture(temp_department_file):
+    assert os.path.exists(temp_department_file)
+
+
+def test_insert_department_select_empty(database):
+    department_data = database.select("departments", "abc")
+    assert len(department_data) == 0
+
+
+def test_temp_bonus_file_fixture(temp_bonus_file):
+    assert os.path.exists(temp_bonus_file)
+
+
+def test_department_table_save_load_empty(database, temp_department_file):
+    department_table = DepartmentTable()
+    department_table.FILE_PATH = temp_department_file
+    department_table.load()
+    assert department_table.data == []
+
+
+def test_department_table_select_nonexistent(database):
+    database.insert("departments", "1 HR")
+    result = database.select("departments", "NonExistent")
+    assert result == []
+
+
+def test_department_table_load_file_not_exists(database):
+    department_table = DepartmentTable()
+    department_table.FILE_PATH = "nonexistent_department_table.csv"
+    department_table.load()
+    assert department_table.data == []
