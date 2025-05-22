@@ -33,7 +33,7 @@ class Database(metaclass=SingletonMeta):
         table = self.tables.get(table_name)
         return table.select(*args) if table else None
 
-     def join(self, table1_name, table2_name, join_attr="id"):
+    def join(self, table1_name, table2_name, join_attr="id"):
         return_data = []
 
         for table1_entry in self.tables.get(table1_name).data:
