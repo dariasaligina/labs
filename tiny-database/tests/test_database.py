@@ -330,6 +330,10 @@ def test_temporary_table_select():
     assert result[0] == {'id': '1', 'name': 'Alice', 'age': '30'}
 
 
-
+def test_temporary_table_insert():
+    temp_table = TemporaryTable([])
+    temp_table.insert("1 A 25")
+    assert len(temp_table.data) == 1
+    assert temp_table.data[0] == {'id': '1', 'field1': 'A', 'field2': '25'}
 
 
