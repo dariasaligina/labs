@@ -177,6 +177,10 @@ class TemporaryTable(Table):
             self.ATTRS = self.data[0].keys()
 
     def insert(self, data):
+        if not self.ATTRS:
+            self.ATTRS.append("id")
+            for i in range(1, len(data.split())):
+                self.ATTRS.append(f"field{i}")
         entry = dict(zip(self.ATTRS, data.split()))
         if not self.find_id(entry["id"]):
             self.data.append(entry)
