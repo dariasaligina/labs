@@ -306,3 +306,30 @@ def test_database_register_table(database):
     temp_table = TemporaryTable([])
     database.register_table("temp_table", temp_table)
     assert "temp_table" in database.tables
+
+
+def test_temporary_table_find_by_id():
+    data = [{'id': '1', 'name': 'Alice', 'age': '30'}, {'id': '2', 'name': 'Bob', 'age': '28'}]
+    temp_table = TemporaryTable(data)
+    result = temp_table.find_id('1')
+    assert result == {'id': '1', 'name': 'Alice', 'age': '30'}
+
+
+def test_temporary_table_find_by_nonexistent_id():
+    data = [{'id': '1', 'name': 'Alice', 'age': '30'}, {'id': '2', 'name': 'Bob', 'age': '28'}]
+    temp_table = TemporaryTable(data)
+    result = temp_table.find_id('3')
+    assert result == None
+
+
+def test_temporary_table_select():
+    data = [{'id': '1', 'name': 'Alice', 'age': '30'}, {'id': '2', 'name': 'Bob', 'age': '28'}]
+    temp_table = TemporaryTable(data)
+    result = temp_table.select("name", "Alice")
+    assert len(result) == 1
+    assert result[0] == {'id': '1', 'name': 'Alice', 'age': '30'}
+
+
+
+
+
